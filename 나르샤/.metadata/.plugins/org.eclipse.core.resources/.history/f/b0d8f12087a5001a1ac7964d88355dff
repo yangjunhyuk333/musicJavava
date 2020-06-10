@@ -1,0 +1,112 @@
+package kr.hs.dgsw;
+
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import jaco.mp3.player.MP3Player;
+
+public class mp3Player extends JFrame{
+	
+	MP3Player mp3;
+	ArrayList<File> mp3List;
+	private int idx = 0;
+	public static final String PATH = "C:\\audio\\mp3";
+	
+	public static void main(String[] args) {
+		mp3Player mp = new mp3Player();
+		mp.loadFile();
+		mp.viewOpen();
+	}
+	
+	private void loadFile() {
+		File[] files = new File(PATH).listFiles();
+		if(mp3List == null) {
+			mp3List = new ArrayList<File>();
+		}
+		for(int i = 0; i < files.length; i++) {
+			mp3List.add(files[i]);
+		}
+		mp3List = new ArrayList<File>(Arrays.asList(files));
+	}
+
+
+
+	private void viewOpen() {
+		
+		setBounds(100, 100, 300, 200);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		Container cPane = this.getContentPane();
+		JButton btnPlay = new JButton("play");
+		JButton btnStop = new JButton("stop");
+		JButton btnPre = new JButton("prev");
+		JButton btnNext = new JButton("Next");
+		
+		btnPlay.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Start");
+				File file = new File("C:\\audio\\mp3\\\\KakaoTalk_File_20200603_1718_54700.mp3");
+				MP3Player mp3 = new MP3Player(file);
+				mp3.play();
+			}
+		});
+		btnStop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Stop");
+				if(mp3 != null) {
+					mp3.stop();
+				}
+			}
+		});
+		
+		btnPre.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Prev");
+			}
+		});
+		
+		btnNext.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Next");
+				idx++;
+				MusicThread musicThread = new MusicThread(); 
+				if(mp3 != null) {
+					musicThread.run();
+					mp3.play();
+				}
+			}
+		});
+		
+		
+		
+		JPanel panel = new JPanel();
+		panel.add(btnPre);
+		panel.add(btnPlay);
+		panel.add(btnStop);
+		panel.add(btnNext);
+		cPane.add(panel);
+		setVisible(true);
+		
+	}
+	
+	private class MusicThread extends Thread {
+		public void run() {
+			if(idx >= mp3List.size()) {
+				idx = 0;
+			}
+			mp3 = new MP3Player(mp3List.get(idx));
+			
+		}
+	}
+}

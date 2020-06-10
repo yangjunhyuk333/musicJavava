@@ -1,0 +1,128 @@
+package kr.hs.dgsw;
+
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import jaco.mp3.player.MP3Player;
+
+public class MusicPlayer extends JFrame{
+	MP3Player mp3;
+	ArrayList<File> mp3List;
+	private int idx = 0;
+	public static final String PATH = "c:\\audio\\mp3";
+	public static void main(String[] args) {
+		MusicPlayer mp = new MusicPlayer();
+		mp.loadFile();
+		mp.viewOpen();
+
+	}
+	private void loadFile() {
+		File[] files = new File(PATH).listFiles();
+		if(mp3List == null) {
+			mp3List = new ArrayList<File>();
+		}
+		for(int i =0; i<files.length;i++) {
+//			System.out.println(files[i].getName());
+			mp3List.add(files[i]);
+		}
+//		mp3List = new ArrayList<File>(Arrays.asList(files));
+		
+	}
+	public void viewOpen() {
+		setBounds(100,100,300,200);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		Container cPane = this.getContentPane();
+		JButton btnPlay = new JButton("play");
+		JButton btnStop = new JButton("Stop");
+		JButton btnPre = new JButton("Pre");
+		JButton btnNext = new JButton("Next");
+		JLabel musicName = new JLabel("°î¸í");
+		btnPlay.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("click");
+				File file = new File(PATH);
+				mp3 = new MP3Player(file);
+				mp3.play();
+			}
+		});
+		btnStop.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("stop");
+				if(mp3!=null)
+					mp3.stop();
+			}
+		});
+		btnPre.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("btnPre");
+				idx--;
+				if(idx<0) {
+					idx = mp3List.size()-1;
+				}
+				
+				if(mp3 !=null) {
+					mp3.stop();
+					mp3 = null;
+				}				
+				
+				mp3 = new MP3Player(mp3List.get(idx));
+				mp3.play();
+				System.out.println("°î¸í : "+mp3List.get(idx).getName());
+			}
+		});
+		btnNext.addActionListener(new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("btnNext");
+				idx++;
+				if(idx>=mp3List.size()) {
+					idx = 0;
+				}
+				
+				if(mp3 !=null) {
+					mp3.stop();
+					mp3 = null;
+				}				
+				
+				mp3 = new MP3Player(mp3List.get(idx));
+				mp3.play();
+				System.out.println("°î¸í : "+mp3List.get(idx).getName());
+				musicName.setText(mp3List.get(idx).getName());
+				
+			}
+		});
+		
+		JPanel pene1 = new JPanel();
+		pene1.add(btnPre);
+		pene1.add(btnPlay);
+		pene1.add(btnStop);
+		pene1.add(btnNext);
+		JPanel pene2 = new JPanel();
+		pene2.add(musicName);
+		JPanel pene3 = new JPanel();
+		pene3.add(pene1);
+		pene3.add(pene2);
+		cPane.add(pene3);
+		
+		setVisible(true);
+		
+	}
+
+}
